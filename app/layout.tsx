@@ -1,5 +1,8 @@
-import "@/app/global.css";
+import "@/styles/global.css";
 import { Metadata } from "next";
+import { SessionProvider } from "next-auth/react";
+import AuthProvider from "@/contexts/AuthContext";
+import LayoutContent from "@/components/LayoutContent";
 
 export const metadata: Metadata = {
   title: "Cinema Guru | Atlas School",
@@ -12,7 +15,13 @@ type Props = {
 export default function RootLayout({ children }: Props) {
   return (
     <html lang="en">
-      <body className={`antialiased  bg-[#00003c] text-white`}>{children}</body>
+      <body className="antialiased  bg-[#00003c] text-white">
+        <SessionProvider>
+          <AuthProvider>
+            <LayoutContent>{children}</LayoutContent>
+          </AuthProvider>
+        </SessionProvider>
+      </body>
     </html>
   );
 }
