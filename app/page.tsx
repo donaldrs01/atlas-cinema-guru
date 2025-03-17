@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { FaStar, FaClock } from "react-icons/fa";
+import { FaRegStar, FaStar, FaRegClock, FaClock } from "react-icons/fa";
 import { UsersTitle } from "@/lib/definitions";
 
 const genreList = [
@@ -13,7 +13,7 @@ const genreList = [
 export default function Page() {
   const [movies, setMovies] = useState<UsersTitle[]>([]);
   const [hoveredMovie, setHoveredMovie] = useState<string | null>(null);
-  
+
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
   const [minYear, setMinYear] = useState(1990);
@@ -29,8 +29,11 @@ export default function Page() {
           minYear: minYear.toString(),
           maxYear: maxYear.toString(),
           query: searchQuery,
-          genres: selectedGenres.join(","),
         });
+
+        if (selectedGenres.length > 0) {
+          params.append("genres", selectedGenres.join(","));
+        }
 
         const response = await fetch(`/api/titles?${params.toString()}`);
         const data = await response.json();
@@ -54,9 +57,9 @@ export default function Page() {
   return (
     <main className="p-6 flex flex-col items-center">
       {/* Filters Section */}
-      <div className="flex w-full max-w-6xl justify-between items-start">
-        {/* Search & Year Filters */}
-        <div className="flex flex-col w-1/3">
+      <div className="flex w-full max-w-7xl justify-between">
+        {/* Left Section: Search & Year Filters */}
+        <div className="flex flex-col -ml-6 w-1/4">
           <span className="text-white font-semibold mb-2">Search</span>
           <input
             type="text"
@@ -65,6 +68,7 @@ export default function Page() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+          
           {/* Year Filters */}
           <div className="flex w-full gap-4 mt-4">
             <div className="flex flex-col w-1/2">
@@ -88,10 +92,10 @@ export default function Page() {
           </div>
         </div>
 
-        {/* Genre Selection */}
-        <div className="flex flex-col w-1/3">
-          <span className="text-white font-semibold">Genres</span>
-          <div className="flex flex-wrap gap-2 mt-2 justify-start">
+        {/* Right Section: Genre Selection */}
+        <div className="flex flex-col w-2/5">
+          <span className="text-white font-semibold ml-6">Genres</span>
+          <div className="flex flex-wrap gap-2 mt-2 justify-start ml-6">
             {genreList.map((genre) => (
               <button 
                 key={genre}
@@ -108,33 +112,40 @@ export default function Page() {
       </div>
 
       {/* Movies Grid Section */}
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full max-w-6xl">
+      <div className="mt-8 ml-12 grid grid-cols-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-6 gap-y-6 w-full">
         {movies.length > 0 ? (
           movies.map((movie) => (
             <div
               key={movie.id}
-              className="relative bg-black rounded-lg border border-teal-300 overflow-hidden"
+              className="relative bg-black rounded-lg border border-teal-300 overflow-hidden w-[380px] h-[380px] group"
               onMouseEnter={() => setHoveredMovie(movie.id)}
               onMouseLeave={() => setHoveredMovie(null)}
             >
+              {/* Favorite & Watch Later Buttons (Hide until hovered over) */}
+              <div className="absolute top-2 right-2 flex gap-2 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button className="text-white text-xl">
+                  {movie.favorited ? <FaStar className="text-yellow-500" /> : <FaRegStar className="text-white stroke-white stroke-2" />}
+                </button>
+                <button className="text-white text-xl">
+                  {movie.watchLater ? <FaClock className="text-blue-500" /> : <FaRegClock className="text-white stroke-white stroke-2" />}
+                </button>
+              </div>
               {/* Movie Image */}
-              <Image src={movie.image} alt={movie.title} width={200} height={300} className="w-full h-[300px] object-cover" />
-
+              <Image 
+                src={movie.image} 
+                alt={movie.title} 
+                width={200} 
+                height={200} 
+                className="w-full h-full object-cover" 
+              />
+              
               {/* Hover Details */}
               {hoveredMovie === movie.id && (
-                <div className="absolute inset-0 bg-black bg-opacity-70 text-white flex flex-col justify-center items-center p-4">
-                  <h3 className="text-lg font-bold">{movie.title}</h3>
+                <div className="absolute bottom-0 w-full bg-[#00003c] bg-opacity-90 text-white p-4 rounded-b-lg">
+                  <h3 className="text-lg font-bold">{movie.title} ({movie.released})</h3>
                   <p className="text-sm">{movie.synopsis}</p>
-                  <p className="text-sm mt-1">Genre: {movie.genre} | {movie.released}</p>
-
-                  {/* Favorite & Watch Later Buttons */}
-                  <div className="flex gap-4 mt-2">
-                    <button className="text-white text-2xl">
-                      <FaStar className={movie.favorited ? "text-yellow-500" : "text-gray-400"} />
-                    </button>
-                    <button className="text-white text-2xl">
-                      <FaClock className={movie.watchLater ? "text-blue-500" : "text-gray-400"} />
-                    </button>
+                  <div className="mt-3">
+                    <span className="px-3 py-1 text-sm font-semibold bg-teal-300 text-black rounded-full">{movie.genre}</span>
                   </div>
                 </div>
               )}
