@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { fetchTitles } from "@/lib/data";
 import Image from "next/image";
 import { FaStar, FaClock } from "react-icons/fa";
 import { UsersTitle } from "@/lib/definitions";
@@ -21,12 +20,27 @@ export default function Page() {
   const [maxYear, setMaxYear] = useState(2024);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
 
-  // Fetch movies when filters change
+  // Fetch movies from the API when filters change
   useEffect(() => {
     async function getMovies() {
-      const fetchedMovies = await fetchTitles(1, minYear, maxYear, searchQuery, selectedGenres, "user@example.com");
-      setMovies(fetchedMovies);
+      try {
+        const params = new URLSearchParams({
+          page: "1",
+          minYear: minYear.toString(),
+          maxYear: maxYear.toString(),
+          query: searchQuery,
+          genres: selectedGenres.join(","),
+        });
+
+        const response = await fetch(`/api/titles?${params.toString()}`);
+        const data = await response.json();
+
+        setMovies(data.title || []);
+      } catch (error) {
+        console.error("Failed to fetch movies:", error);
+      }
     }
+
     getMovies();
   }, [searchQuery, minYear, maxYear, selectedGenres]);
 

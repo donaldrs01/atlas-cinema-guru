@@ -1,17 +1,30 @@
-import { createKysely } from "@vercel/postgres-kysely";
-import { Generated } from "kysely";
+import "dotenv/config";
+import { Generated, Kysely, PostgresDialect } from "kysely";
+import { Pool } from "pg";
+import ws from "ws"; // Import WebSockets
+import { neonConfig } from "@neondatabase/serverless"; // NeonDB config
 
-const connectionString = process.env.POSTGRES_URL;
+// ✅ Set WebSocket support for NeonDB
+neonConfig.webSocketConstructor = ws;
 
+// ✅ Use DATABASE_URL from your environment variables
+const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
-  throw new Error("Missing POSTGRES_URL variable.");
+  throw new Error("Missing DATABASE_URL env variable");
 }
 
-export const db = createKysely<Database>({
-  connectionString
+// ✅ Create a connection pool with WebSockets enabled
+const pool = new Pool({
+  connectionString,
+  ssl: { rejectUnauthorized: false }, // Required for NeonDB
 });
 
-// Database schema interfaces
+// ✅ Set up Kysely with the NeonDB connection
+export const db = new Kysely<Database>({
+  dialect: new PostgresDialect({ pool }),
+});
+
+// ✅ Database Schema Interfaces
 export interface Database {
   titles: TitlesTable;
   users: UsersTable;
