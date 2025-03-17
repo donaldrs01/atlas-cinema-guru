@@ -1,14 +1,22 @@
-import "dotenv/config";
-import { Generated } from "kysely";
 import { createKysely } from "@vercel/postgres-kysely";
+import { Generated } from "kysely";
+import ws from "ws"; // Import WebSockets
 
-// Explicitly use DATABASE_URL instead of POSTGRES_URL
-const connectionString = process.env.DATABASE_URL;
+const connectionString = process.env.POSTGRES_URL;
 
 if (!connectionString) {
-  throw new Error("Missing DATABASE_URL env variable");
+  throw new Error("Database connection string not provided. Set the POSTGRES_URL environment variable.");
 }
 
+// Ensure Neon uses WebSockets
+const neonConfig = { webSocketConstructor: ws };
+
+export const db = createKysely<Database>({
+  connectionString,
+  ...neonConfig, // Apply WebSocket configuration
+});
+
+// Database schema interfaces
 export interface Database {
   titles: TitlesTable;
   users: UsersTable;
@@ -51,8 +59,3 @@ export interface ActivitiesTable {
   user_id: string;
   activity: "FAVORITED" | "WATCH_LATER";
 }
-
-// Ensure that Kysely connects using DATABASE_URL
-export const db = createKysely<Database>({
-  connectionString,
-});
