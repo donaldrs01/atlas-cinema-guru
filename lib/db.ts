@@ -1,5 +1,13 @@
+import "dotenv/config";
 import { Generated } from "kysely";
 import { createKysely } from "@vercel/postgres-kysely";
+
+// Explicitly use DATABASE_URL instead of POSTGRES_URL
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  throw new Error("Missing DATABASE_URL env variable");
+}
 
 export interface Database {
   titles: TitlesTable;
@@ -12,7 +20,7 @@ export interface Database {
 export interface TitlesTable {
   id: Generated<string>;
   title: string;
-  synposis: string;
+  synopsis: string;
   released: number;
   genre: string;
 }
@@ -44,4 +52,7 @@ export interface ActivitiesTable {
   activity: "FAVORITED" | "WATCH_LATER";
 }
 
-export const db = createKysely<Database>();
+// Ensure that Kysely connects using DATABASE_URL
+export const db = createKysely<Database>({
+  connectionString,
+});

@@ -11,11 +11,12 @@ export default function Sidebar() {
   return (
     <div className="h-full">
     <div
-      className={`sticky h-screen bg-teal-500 pt-2 px-2 ${
+      className={`h-screen bg-teal-500 pt-2 px-2 ${
         isExpanded ? "w-50" : "w-20"
       } inset-y-0`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
+      style={{ minHeight: "100vh" }}
     >
     {/* Navigation Links */}
     <nav className="mt-4">

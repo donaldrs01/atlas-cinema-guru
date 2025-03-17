@@ -35,7 +35,7 @@ export async function fetchTitles(
     //Fetch titles
     const titles = await db
       .selectFrom("titles")
-      .selectAll("titles")
+      .select(["id", "title", "synopsis", "released", "genre"])
       .where("titles.released", ">=", minYear)
       .where("titles.released", "<=", maxYear)
       .where("titles.title", "ilike", `%${query}%`)
