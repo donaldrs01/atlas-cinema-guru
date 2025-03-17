@@ -1,19 +1,14 @@
 import { createKysely } from "@vercel/postgres-kysely";
 import { Generated } from "kysely";
-import ws from "ws"; // Import WebSockets
 
 const connectionString = process.env.POSTGRES_URL;
 
 if (!connectionString) {
-  throw new Error("Database connection string not provided. Set the POSTGRES_URL environment variable.");
+  throw new Error("Missing POSTGRES_URL variable.");
 }
 
-// Ensure Neon uses WebSockets
-const neonConfig = { webSocketConstructor: ws };
-
 export const db = createKysely<Database>({
-  connectionString,
-  ...neonConfig,
+  connectionString
 });
 
 // Database schema interfaces
