@@ -19,13 +19,15 @@ export default function Page() {
   const [minYear, setMinYear] = useState(1990);
   const [maxYear, setMaxYear] = useState(2024);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const moviesPerPage = 6;
 
   // Fetch movies from the API when filters change
   useEffect(() => {
     async function getMovies() {
       try {
         const params = new URLSearchParams({
-          page: "1",
+          page: currentPage.toString(),
           minYear: minYear.toString(),
           maxYear: maxYear.toString(),
           query: searchQuery,
@@ -45,7 +47,7 @@ export default function Page() {
     }
 
     getMovies();
-  }, [searchQuery, minYear, maxYear, selectedGenres]);
+  }, [searchQuery, minYear, maxYear, selectedGenres, currentPage]);
 
   // Toggle genre selection
   function toggleGenre(genre: string) {
@@ -114,7 +116,7 @@ export default function Page() {
       {/* Movies Grid Section */}
       <div className="mt-8 ml-12 grid grid-cols-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-x-6 gap-y-6 w-full">
         {movies.length > 0 ? (
-          movies.map((movie) => (
+          movies.slice(0, moviesPerPage).map((movie) => (
             <div
               key={movie.id}
               className="relative bg-black rounded-lg border border-teal-300 overflow-hidden w-[380px] h-[380px] group"
@@ -154,6 +156,23 @@ export default function Page() {
         ) : (
           <p className="text-white">No movies found...</p>
         )}
+      </div>
+      {/* Pagination Controls */}
+      <div className="flex w-64 justify-center mt-8 gap-1">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className="w-1/2 bg-teal-300 text-black px-6 py-2 rounded-l-full border-black disabled:opacity-50 hover:bg-teal-400 cursor-pointer"
+        >
+          Previous
+        </button>
+        <button
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+          disabled={movies.length < moviesPerPage} // Disable button when on last page
+          className="w-1/2 bg-teal-300 text-black px-6 py-2 rounded-r-full border-black hover:bg-teal-400 cursor-pointer disabled:opacity-50"
+        >
+          Next
+        </button>
       </div>
     </main>
   );
