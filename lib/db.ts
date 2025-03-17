@@ -13,7 +13,7 @@ const neonConfig = { webSocketConstructor: ws };
 
 export const db = createKysely<Database>({
   connectionString,
-  ...neonConfig, // Apply WebSocket configuration
+  ...neonConfig,
 });
 
 // Database schema interfaces
