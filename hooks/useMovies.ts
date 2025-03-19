@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { UsersTitle } from "@/lib/definitions"
 import useToggleFavorite from "@/hooks/useToggleFavorite";
+import useToggleWatchLater from "./useToggleWatchLater";
 
 export default function useMovies() {
   const [movies, setMovies] = useState<UsersTitle[]>([]);
@@ -20,6 +21,7 @@ export default function useMovies() {
   const [hasMore, setHasMore] = useState(true);
   const moviesPerPage = 6;
   const { toggleFavorite } = useToggleFavorite(movies, setMovies);
+  const { toggleWatchLater} = useToggleWatchLater(movies, setMovies);
 
   // Grab movies from API
   useEffect(() => {
@@ -57,5 +59,6 @@ export default function useMovies() {
     setCurrentPage,
     hasMore,
     toggleFavorite,
+    toggleWatchLater,
   };
 }

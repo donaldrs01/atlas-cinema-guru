@@ -16,9 +16,10 @@ interface MovieCardProps {
         watchLater: boolean;
     };
     toggleFavorite?: (id: string) => void;
+    toggleWatchLater? : (id: string) => void;
 }
 
-export default function MovieCard({ movie, toggleFavorite }: MovieCardProps) {
+export default function MovieCard({ movie, toggleFavorite, toggleWatchLater }: MovieCardProps) {
     const { hoveredMovie, setHoveredMovie } = useHoveredMovie();
 
     return (
@@ -29,10 +30,10 @@ export default function MovieCard({ movie, toggleFavorite }: MovieCardProps) {
         >
             {/* Favorite & Watch Later Buttons */}
             <div className="absolute top-2 right-2 flex gap-2 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <button className="text-white text-xl cursor-pointer" onClick={() => (toggleFavorite && toggleFavorite(movie.id))}>
+            <button className="text-white text-xl cursor-pointer" onClick={() => toggleFavorite?.(movie.id)}>
                 {movie.favorited ? <FaStar className="text-yellow-500" /> : <FaRegStar className="text-white stroke-white stroke-2" />}
             </button>
-            <button className="text-white text-xl cursor-pointer">
+            <button className="text-white text-xl cursor-pointer" onClick={() => toggleWatchLater?.(movie.id)}>
                 {movie.watchLater ? <FaClock className="text-blue-500" /> : <FaRegClock className="text-white stroke-white stroke-2" />}
             </button>
             </div>

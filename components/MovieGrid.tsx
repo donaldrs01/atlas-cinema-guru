@@ -3,8 +3,8 @@ import { UsersTitle } from "@/lib/definitions";
 
 interface MovieGridProps {
     movies: UsersTitle[];
-    toggleFavorite?: (id: string) => void;
-    toggleWatchLater?: (id: string) => void;
+    toggleFavorite: (id: string) => void;
+    toggleWatchLater: (id: string) => void;
 }
 
 export default function MovieGrid({ movies, toggleFavorite, toggleWatchLater }: MovieGridProps) {
