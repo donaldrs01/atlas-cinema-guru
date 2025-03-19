@@ -6,9 +6,14 @@ import { auth } from "@/auth";
  * POST /api/favorites/:id
  */
 export const POST = auth(
-  //@ts-ignore
-  async (req: NextRequest, { params }: { params: { id: string } }) => {
-    const { id } = params;
+  async (req: NextRequest, context: any) => {
+    // Await the context 
+    const { params } = await context;
+    const id = params?.id;
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing movie ID" }, { status: 400 });
+    }
 
     //@ts-ignore
     if (!req.auth) {
@@ -36,9 +41,22 @@ export const POST = auth(
  * DELETE /api/favorites/:id
  */
 export const DELETE = auth(
-  //@ts-ignore
-  async (req: NextRequest, { params }: { params: { id: string } }) => {
-    const { id } = params;
+  async (req: NextRequest, context: any) => {
+    // Await the context
+    const { params } = await context;
+    const id = params?.id;
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing movie ID" }, { status: 400 });
+    }
+
+    //@ts-ignore
+    if (!req.auth) {
+      return NextResponse.json(
+        { error: "Unauthorized - Not logged in" },
+        { status: 401 }
+      );
+    }
 
     const {
       user: { email }, //@ts-ignore
