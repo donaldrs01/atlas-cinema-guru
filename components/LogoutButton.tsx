@@ -1,22 +1,17 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { IoLogOutOutline } from "react-icons/io5";
 
 export default function LogoutButton() {
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await signOut({ redirect: false });
-    router.push("/api/auth/signin");
-  };
 
   return (
     <button
-      onClick={handleLogout}
-      className="mt-6 bg-red-500 px-4 py-2 rounded-lg"
+      onClick={() => signOut({ callbackUrl: "/api/auth/signin" })}
+      className="flex items-center space-x-2 text-sm cursor-pointer"
     >
-      Logout
+      <IoLogOutOutline className="text-lg" />
+      <span>Logout</span>
     </button>
   );
 }

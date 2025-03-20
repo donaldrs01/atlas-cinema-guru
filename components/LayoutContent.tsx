@@ -3,18 +3,31 @@
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 export default function LayoutContent({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
-  const userEmail = auth?.user?.email || "Guest";
+  const { status } = useSession();
+  const router = useRouter();
 
+  useEffect(() => {
+    if (!auth?.user) {
+      console.log("User not authenticated - redirecting to login screen");
+      router.push("/api/auth/signin");
+    }
+  }, [auth?.user, router]);
+
+  if (!auth?.user) return null; // Prevent render until user is authenticated
+  
   return (
-    <>
-      <Header userEmail={userEmail} />
-      <div style={{ display: "flex" }}>
+    <div className="flex flex-col h-screen">
+      <Header />
+      <div className="flex flex-1">
         <Sidebar />
-        <main style={{ flex: 1 }}>{children}</main>
+        <main className="flex-1 p-6 overflow-auto">{children}</main>
       </div>
-    </>
+    </div>
   );
 }

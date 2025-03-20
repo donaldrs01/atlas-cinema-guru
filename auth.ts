@@ -15,7 +15,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async redirect({ url, baseUrl }) {
-      return baseUrl; // Always redirect to `/` after login
+      if (url.includes("/api/auth/signin")) {
+        return baseUrl; // Send user to homepage after login
+      }
+      return url.startsWith(baseUrl) ? url : baseUrl;
+    },
+    async session({ session }) {
+      return session;
     },
   },
 });

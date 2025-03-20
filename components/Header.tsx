@@ -1,14 +1,11 @@
 import Link from "next/link";
-import { IoLogOutOutline } from "react-icons/io5";
+import LogoutButton from "./LogoutButton";
 import { IoFilmOutline } from "react-icons/io5";
 import { useAuth } from "@/contexts/AuthContext";
 
-interface HeaderProps {
-  userEmail: string;
-}
-
-export default function Header({ userEmail }: HeaderProps) {
+export default function Header() {
   const auth = useAuth();
+  const userEmail = auth?.user?.email || "Guest";
 
   return (
     <header className="bg-teal-300 p-4 flex justify-between items-center text-black">
@@ -18,10 +15,7 @@ export default function Header({ userEmail }: HeaderProps) {
       </div>
       <div className="flex items-center space-x-4 text-sm">
         <span>Welcome, {userEmail || "Guest"}</span>
-        <button onClick={auth?.logout} className="flex items-center cursor-pointer">
-          <IoLogOutOutline className="text-lg" />
-          <span>Logout</span>
-        </button>
+          <LogoutButton />
       </div>
     </header>
   );
